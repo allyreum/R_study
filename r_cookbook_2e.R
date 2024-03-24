@@ -134,3 +134,106 @@ lst[names] <- values
 
 # 5.10 Removing an Element from a List
 years[c("Carter","Clinton")] <- NULL
+
+
+# 5.11 Flatten a List into a Vector(using unlist)
+iq.score <- list(100,120,103,80,99)
+mean(iq.score)      # 리스트 평균 계산할 수 없음
+mean(unlist(iq.score))
+
+cat(iq.score,'\n') # cat scalars and vectors, but we cannot cat a list
+cat("IQ scores:", unlist(iq.score),'\n')
+
+
+# 5.12 Removing NULL Elements from a List
+library(tidyverse)
+lst <- list("Moe",NULL,"Curly")
+compact(lst)      # compact함수는 리스트로부터 NULL을 제거함(NA 제거못함)
+
+
+# 5.13 Removing List Elements Using a Condition
+lst <- list(NA,0,NA,1,2)
+lst %>% discard(is.na)         # NA값들을 제거
+
+lst<-list(3,"dog",2,"cat",1)
+lst %>% discard(is.character)
+
+is.na.or.null <- function(x){
+  is.na(x)||is.null(x) # NA와 NULL인 애들 제외를 위함
+}
+
+lst<-list(NA,0,NULL,1,2)
+lst %>% discard(is.na.or.null)
+
+mods <- list(lm(x ~ y1), lm(x ~ y2), lm(x ~ y3))
+filter_r2 <- function(model){
+  summary(model)$r.squared < 0.7
+}
+
+mods %>% discard(filter_r2)
+
+
+# 5.14 Initializing a Matrix
+vec <- 1:6
+matrix(vec,2,3) 
+matrix(vec,2,3,byrow=TRUE)
+v <- c(1:6)
+dim(v) <- c(2,3) #  vector and then shapes it into a 2 × 3 matrix
+v
+
+matrix(0,2,3)
+matrix(NA,2,3)
+
+
+# 5.15 Performing Matrix Operations
+a<-matrix(1:9,3,3)
+t(a)
+solve(a)
+a %*% t(matrix(vec,2,3))
+diag(a)
+
+
+# 5.16 Giving Descriptive Names to the Rows and Columns of a Matrix
+corr_mat <- matrix(c(1.000,0.556,0.390,
+                     0.556,1.000,0.444,
+                     0.390,0.444,1.000), 3,3)
+colnames(corr_mat) <- c('A', 'M', 'G')
+rownames(corr_mat) <- c('A', 'M', 'G')
+corr_mat['M','G'] # the correlation between variables
+
+
+# 5.17 Selecting One Row or Column from a Matrix
+corr_mat[1, , drop=FALSE] # selecting a row returns a row vector
+corr_mat[ , 3, drop=FALSE] # selecting a row returns a column vector
+
+
+# 5.18 Initializing a Data Frame from Column Data
+# data.frame은 문자열을 자동으로 요인으로 변환
+# tibble과 as_tibble함수는 문자열 데이터를 변환하지 않음
+
+
+# 5.19 Initializing a Data Frame from Row Data
+l1 <- list(a=1, b=2, c='x')
+l2 <- list(a=3, b=4, c='Y')
+l3 <- list(a=5, b=6, c='z')
+
+rbind(l1,l2,l3)
+list.of.lists <- list(l1,l2,l3)
+bind_rows(list.of.lists)
+
+# 데이터 프레임의 요인
+data.frame(a=1, b=2, c='a', stringsAsFactors = FALSE) # stringsAsFactors = FALSE : 문자열로 취급, default
+obs <- list(l1,l2,l3)
+df <- do.call(rbind, Map(as.data.frame, obs)) # transform the rows into data frames using the Map function 
+# do.call(함수, 인수목록 = list형태)
+# do.call() 함수는 특히 동적으로 함수를 호출해야 할 때 유용. 함수 이름이나 인수 목록이 변수로 주어지는 경우에 사용!
+
+
+# 5.20 Appending Rows to a Data Frame
+suburbs <- read.csv('./data/suburbs.txt')
+suburbs2 <- read_csv('./data/suburbs.txt') # tibble
+newRow <- data.frame(ctiy = 'West Dundee', county = 'Kane', state = 'IL', pop = 7352)
+# rbind > 새로운 행은 데이터프레임과 동일한 열 이름을 사용! 아닌 경우에는 fail
+# rbind의 첫번째 인자와 동일한 형식이 됨
+rbind(some_tibble, some_data.frame) # tibble
+rbind(som_data.frame, some_tibble) # data.frame
