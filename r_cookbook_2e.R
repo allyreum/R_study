@@ -237,3 +237,109 @@ newRow <- data.frame(ctiy = 'West Dundee', county = 'Kane', state = 'IL', pop = 
 # rbind의 첫번째 인자와 동일한 형식이 됨
 rbind(some_tibble, some_data.frame) # tibble
 rbind(som_data.frame, some_tibble) # data.frame
+
+
+# 5.21 Preallocating a Data Frame
+data5.21 <- suburbs %>% head(3)
+data5.21 %>% dplyr::select(1) # 열추출
+data5.21 %>% dplyr::select(1,3,4) # 열추출
+data5.21[[1]] #  data5.21[c(1)]와 동일
+data5.21[c(1,3)]
+
+
+# 5.22 Selecting Data Frame Columns by Position
+# list operator: df[["name"]], df$name
+# matrix operator: df[, 'name']
+
+
+# 5.23 Rename columns from a data frame
+# df %>% rename(newname = oldname,....)
+df <- data.frame(v1 = 1:3, v2 =4:6, v3 = 7:9)
+df %>% rename(tom = v1, dick =v2)
+colnames(df) <- c('home', 'house','friday')
+
+df2 <- data.frame(v1 = 1:3, v2 =4:6, v3 = 7:9)
+df2 %>% select(tom = v1, v2)
+# rename은 명시하는 열의  이름을 바꾸면서 다른 모든 열은 건드리지 않음
+# select는 선택한 열에 대해서만 반환됨
+
+
+# 5.24 Removing NAs from a Data Frame
+dfm <- data.frame(x = c(1,NA,3,4,5),
+                  y= c(1,2,NA,4,5))
+clean_dfm <- na.omit(dfm)
+colSums(dfm) # cumsum fail because the input contains NA values
+cumsum(na.omit(dfm))
+
+
+# 5.25 Excluding Columns by Nam
+dfm %>% select(-y)
+
+
+# 5.26 Combining Two Data Frames
+df1 <- data.frame(a = c(1,2))
+df2 <- data.frame(b = c(7,8))
+
+cbind(df1,df2)
+rbind(df1,df2) # names do not match previous names
+
+df2 <- df2 %>% rename(a = b)
+rbind(df1, df2)
+# The rbind function requires that the data frames have the same width: same number of columns and same column names
+
+
+# 5.27 Merging Data Frames by Common Column
+born <- tibble(
+  name = c('stella', 'judy', 'anna', 'alley', 'harry'),
+  year.born = c(1887, 1902, 1903, 1964, 1922),
+  place.born = c('Brooklyn', 'Seoul', 'Osaka', 'Paris', 'Sydney')
+)
+
+died <- tibble(
+  name = c('stella', 'harry'),  year.died = c(1952,1975)
+)
+
+inner_join(born, died, by ='name')
+full_join(born, died, by ='name')
+full_join(born, died) # by를 지정하지 않는 경우에는 자동으로 조인시도하고, 어느  기준으로 했는 지 표시해서 반환
+
+aset<- data.frame(key1 =1:3, value =2) 
+bset<- data.frame(key2 =1:3, value =3) 
+inner_join(aset, bset, by = c('key1' = 'key2')) # 이름이 다른 경우 매개변수에 대한 내용 추가
+
+
+# 5.28 Converting One Atomic Value into Another
+as.integer(3.14)
+as.numeric("foo")
+as.character(101)
+
+as.numeric(c("1","2.718","7.389","20.086"))
+as.numeric(c("1","2.718","7.389","20.086", "etc."))
+as.character(101:105)
+
+
+# 5.29 Converting One Structured Data Type into Another
+
+# 1. When you convert a list into a vector, the conversion works cleanly if your list contains atomic values that are all of the same mode. 
+list_tmp <- list(1,2,3,'x','y','z')
+as.vector(list_tmp)
+unlist(list_tmp) # Use unlist rather than as.vector
+
+# 2. Converting a data frame into a vector makes sense only if the data frame contains one row or one column. 
+# To extract all its elements into one, long vector, use as.vector(as.matrix(dfrm)) 
+df2_tmp <-data.frame(year = c(1994, 1990),  sex = c(2,1)) # makes sense only if the data frame is all-numeric or all-character
+df_tmp <-data.frame( name = c('stella', 'harry'),  year.died = c(1952,1975)) #  first converted to character strings.
+as.vector(as.matrix(df_tmp))
+as.vector(as.matrix(df2_tmp))
+
+
+# 3. Data frame to list
+# Using as.list essentially removes the class (data.frame) and thereby exposes the underlying list. 
+# That is useful when you want R to treat your data structure as a list—say, for printing
+as.list(df_tmp)
+
+# 4. Be careful when converting a data frame into a matrix. 
+# If the data frame contains only numeric values then you get a numeric matrix. 
+# If it contains only character values, you get a character matrix. 
+# But if the data frame is a mix of numbers, characters, and/or factors,  then all values are first converted to characters. 
+# The result is a matrix of character strings.
