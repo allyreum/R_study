@@ -343,3 +343,207 @@ as.list(df_tmp)
 # If it contains only character values, you get a character matrix. 
 # But if the data frame is a mix of numbers, characters, and/or factors,  then all values are first converted to characters. 
 # The result is a matrix of character strings.
+
+# chapter 6:   Data Transformations
+# 6.1 Applying a Function to Each List Element
+library(tidyverse)
+
+lst <- list( a= c(1,2,3), b= c(4,5,6))
+lst %>% map(mean) # map이랑 lapply랑 비슷함
+
+lapply(lst, mean)
+sapply(lst, mean)
+
+fun6.1 <- function(x){
+  if(x>1) {
+    1
+  } else {
+    "Less than 1"
+  }
+}
+
+fun6.1(5)
+fun6.1(0)
+
+lst2 <- list(0.5, 1.5, .9, 2)
+map(lst2,fun6.1)
+lapply(lst2,fun6.1)
+
+
+#6.2 Applying a function to all rows of a DataFrame
+fun6.3 <- function(a,b,c){
+  sum(seq(a,b,c))
+}
+
+df6.3 <- data.frame(n = c(1,2,3),
+                 m = c(8,10,22),
+                 c= c(1,2,3) )
+
+df6.3 %>% rowwise() %>% # rowwise()는 데이터프레임을 행 단위로 처리하도록 설정
+  mutate(output = fun6.3(n,m,c))
+
+df6.3 %>% mutate(output = fun6.3(n,m,c))
+ # df6.3의 각 행에 대해 하나의 값으로 전달되어야 하므로 error
+
+
+#6.3 Applying a function to each row of a DataFrame
+# result <- apply(matrix, 1, function) 2번째 인자가 1= row별
+long <- matrix(1:15, 3, 5)
+apply(long,1,sum)
+apply(long,1,range)
+
+
+# 6.4 Applying a Function to Every Column
+# result <- apply(matrix, 2, function) 2번째 인자가 2 = column별
+head(batches)
+map_df(batches, class)
+
+
+# 6.5  Applying a Function to Parallel Vectors or Lists
+
+
+# 6.6 Applying a Function to Groups of Data
+# tapply(vector, factor, function)
+attach(suburbs)
+tapply(pop,county,sum)
+tapply(pop,county,mean)
+tapply(pop,county,length)
+detach(suburbs)
+
+df6.6 <- tibble(
+  my_g = c('a','b', 'a','a','b', 'a'),
+  value = 1:6
+)
+
+df6.6 %>% group_by(my_g) %>% 
+  summarise(
+    avg_values = mean(value),
+    sum_values = sum(value),
+    n_value = n()
+  )
+
+tapply(df6.6$value, df6.6$my_g, mean)
+
+
+# 6.7 조건에 따라 새로운 열 만들기
+# df %>% mutate(new_field = 
+#                 case_when(my_field == "something" ~ "reusult",
+#                           my_field != "somthing else" ~ "other result",
+#                           TRUE ~"all other results")            )
+
+df6.7 <- data.frame(vals = 1:5)
+df6.7 %>% mutate(new_vals = case_when(vals <= 2 ~ "2 or less",
+                                      vals > 2 & vals <= 4 ~ "2 to 4",
+                                      TRUE ~ "over 4"))
+
+
+# chapter 7: Strings and Dates
+# 7.1 Getting the Length of a String
+s <- c('Kim', 'Lee', 'Jand', 'Baek')
+nchar(s)
+length(s)
+
+
+# 7.2 Concatenating Strings
+paste('I','want','to','go','home')
+paste0('I','want','to','go','home') # without space
+
+paste("The square root of twice pi is approximately", sqrt(pi*2))
+paste(s, "loves", "sweet home", collapse = " and ")
+
+
+# 7.3 Extracting Substrings
+substr("Statistics", 1, 4)
+substr("Statistics", 7, 10)
+cties <- suburbs$city
+substr(cties, nchar(cties)-1, nchar(cties))
+
+
+# 7.4 Splitting a String According to a Delimiter
+path <- "/home/mike/data/trials.csv"
+strsplit(path, "/")
+
+paths <- c("/home/mike/data/trials.csv",
+           "/home/mike/data/errors.csv",
+           "/home/mike/corr/reject.doc")
+strsplit(paths, "/")
+
+
+# 7.5 Replacing Substrings
+string <- "aaa aaa aaa"
+
+sub("a", "X", string)
+# sub(old, new, string)  Use sub to replace the first instance of a substring
+
+gsub("a", "X", string)
+# gsub(old, new, string) Use gsub to replace all instances of a substring
+
+
+# 7.6 Generating All Pairwise Combinations of Strings
+locations <- c("NY", "LA", "CHI", "HOU")
+treatments <- c("T1", "T2", "T3")
+outer(locations, treatments, paste, sep="-")
+# outer(strings1, strings2, paste, sep="")
+
+expand.grid(treatments, treatments) # pair of vectors
+
+m <- outer(treatments, treatments, paste, sep="-")
+m[!lower.tri(m)] # distinct
+
+
+# 7.7 Getting the Current Date
+Sys.Date()
+class(Sys.Date())
+
+
+# 7.8  Converting a String into a Date
+as.Date("2024-03-30")
+as.Date('12/31/2024')
+as.Date('12/31/2024', format = '%m/%d/%Y')
+
+
+# 7.9 Converting a Date into a String
+format(Sys.Date())
+as.character(Sys.Date())
+format(Sys.Date(), format = '%m/%d/%Y')
+
+
+# 7.10  Converting Year, Month, and Day into a Date
+year <- 2024
+month <- 3
+day <- 30
+as.Date(ISOdate(year, month, day)) # ISOdate(year, month, day)
+as.Date(ISOdate(2012,2,29))
+ISOdate(2024,2,29) 
+ISOdate(2023,2,29) # 2023 is not a leap year
+
+
+# 7. 11 Getting the Julian Date -> julian(d7.11)
+
+
+# 7.12 Extracting the Parts of a Date
+d7.12 <- as.Date("2024-03-15")
+p <- as.POSIXlt(d7.12)
+p$mday # Day of the month
+p$mon # Month (0 = January)
+p$year + 1900 # Year
+
+d2 <- as.Date("2030-02-01")
+as.POSIXlt(d2)$wday # Day of the week (0–6, 0 = Sunday)
+as.POSIXlt(d2)$yday # Day of the year (0–365)
+as.POSIXlt(d2)$year + 1900
+
+
+# 7.13 Creating a Sequence of Dates
+st_day <- as.Date("2020-05-01")
+ed_day <- as.Date("2024-04-01")
+seq(from = st_day, to = ed_day, by=1) 
+seq(from = ed_day, by = 1, length.out = 7)
+seq(from = ed_day, by = "3 months", length.out = 4)
+seq(as.Date("2020-05-01"), by = "months", len = 3)
+
+
+
+
+
+
