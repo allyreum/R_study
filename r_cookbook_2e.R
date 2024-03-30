@@ -544,6 +544,108 @@ seq(as.Date("2020-05-01"), by = "months", len = 3)
 
 
 
+# chapter 8: Probability
+# dnorm: Normal density
+# pnorm: Normal distribution function
+# qnorm: Normal quantile function
+# rnorm: Normal random variates
+# binom: n = number of trials; p = probability of success for one trial
+# geom: p = probability of success for one trial
+# hyper :m = number of white balls in urn; n = number of black balls in urn; k = number of balls drawn from urn
+
+
+# 8.1 Counting the Number of Combinations
+choose(5,3)
+
+
+# 8.2 Generating Combinations
+items <- 2:5
+k <- 2
+combn(items, k) # k게씩 선택하는 조합 모두 생성
+combn(c('t1','t2','t3','t4','t5'),3)
+
+
+# 8.3 Generating Random Numbers
+runif(1) # runif: a uniform random number between 0 and 1 
+rnorm(1) # rnorm : the Normal distribution’s random number generator
+
+runif(1, min=-3, max=3) # One uniform variate between -3 and +3
+rnorm(1) # One standard Normal variate
+rnorm(1, mean=100, sd=15) # One Normal variate, mean 100 and SD 15
+rbinom(1, size=10, prob=0.5) # One binomial variate
+rpois(1, lambda=10) # One Poisson variate
+rexp(1, rate=0.1) # One exponential variate
+rgamma(1, shape=2, rate=0.1) # One gamma variate
+
+rnorm(3, mean = c(-10,0,+10), sd = 1)
+rnorm(6, mean = c(-10,0,+10), sd = 1)
+means <- rnorm(30, mean = 0, sd = 0.2)
+rnorm(30, mean = means, sd = 1)
+
+
+# 8.4  Generating Reproducible Random Numbers
+set.seed(42) # Or use any other positive integer
+set.seed(165)
+runif(10)
+set.seed(165)
+runif(10)
+
+
+# 8.5 Generating a Random Sample
+world_series <- read_csv('./data/world_series.csv')
+sample(world_series$year, 10)
+
+set.seed(42)
+x <- rnorm(1000,4,10) # rnorm(1, mean=4, sd = 10)
+medians <- numeric(1000)
+for(i in 1:1000){
+  medians[i] <- median(sample(x, replace = TRUE))
+}
+
+sample(c("H","T"), 10, replace =TRUE)
+sample(c(FALSE, TRUE), 20, replace = TRUE)
+sample(c(FALSE, TRUE), 20, replace = TRUE, prob = c(0.2, 0.8)) # 성공확률 0.8, 실패확률 0.2
+
+
+# 8.7 Randomly Permuting a Vector
+sample(1:10) # sample(v, size = length(v), replace = FALSE)
+
+
+# 8.8 Calculating Probabilities for Discrete Distributions
+
+# Discrete Distributions - density - distribution
+# Binomial - dbinom(x, size, prob) pbinom(x, size, prob)
+# Geometric - dgeom(x, prob) pgeom(x, prob)
+# Poisson - dpois(x, lambda) ppois(x, lambda)
+
+pbinom(7, size = 10, prob = 0.5) # p(x<=7)
+pbinom(7, 10, 0.5, low.tail = FALSE) # P(X > x)
+
+pbinom(7, 10, 0.5) - pbinom(3, 10, 0.5) # P(3 <= X <= 7)
+pbinom(c(3,7), 10, 0.5) # 두 개의 누적확률 한번에 구함
+diff(pbinom(c(3,7), 10, 0.5))
+
+
+# 8.9 Calculating Probabilities for Continuous Distributions
+pnorm(q =.8, mean = 0, sd = 1)
+
+# Normal: pnorm(x, mean, sd)
+# Student's t: pt(x, df)
+# Exponential: pexp(x, rate)
+# Gamma: pgamma(x, shape, rate)
+# Chi-squared (χ2): pchisq(x, df)
+
+pnorm(66, mean = 70, sd =3) # P(X ≤ 66) given that X ~ N(70, 3)
+pexp(20, rate = 1/40)
+pexp(50, rate = 1/40, lower.tail = FALSE)
+pexp(50, rate = 1/40) - pexp(20, rate = 1/40) 
+
+
+
+
+
+
+
 
 
 
