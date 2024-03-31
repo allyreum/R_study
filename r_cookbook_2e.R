@@ -627,13 +627,12 @@ diff(pbinom(c(3,7), 10, 0.5))
 
 
 # 8.9 Calculating Probabilities for Continuous Distributions
-pnorm(q =.8, mean = 0, sd = 1)
-
 # Normal: pnorm(x, mean, sd)
 # Student's t: pt(x, df)
 # Exponential: pexp(x, rate)
 # Gamma: pgamma(x, shape, rate)
 # Chi-squared (χ2): pchisq(x, df)
+pnorm(q =.8, mean = 0, sd = 1)
 
 pnorm(66, mean = 70, sd =3) # P(X ≤ 66) given that X ~ N(70, 3)
 pexp(20, rate = 1/40)
@@ -641,11 +640,44 @@ pexp(50, rate = 1/40, lower.tail = FALSE)
 pexp(50, rate = 1/40) - pexp(20, rate = 1/40) 
 
 
+# 8.10 Converting Probabilities to Quantiles
+# Binomial: qbinom(p, size, prob)
+# Geometric: qgeom(p, prob)
+# Poisson: qpois(p, lambda)
+# Student's t: qt(p, df)
+# Exponential: qexp(p, rate)
+# Gamma: qgamma(p, shape, rate=rate) or qgamma(p, shape, scale=scale)
+# Chi-squared (χ2): qchisq(p, df
+
+qnorm(0.05, mean = 100, sd = 15) # Normal: qnorm(p, mean, sd)
+
+qnorm(0.025)
+qnorm(0.975)
+qnorm(c(0.025, 0.975))
 
 
+# 8.11 Plotting a Density Function
+library(ggplot2)
+x <- seq(from=0, to=6, length.out=100)
+ylim <- c(0, 0.6)
+df <- rbind(
+  data.frame(x= x, dist_name ="Uniform", y= dunif(x, min =2, max =4)),
+  data.frame(x= x, dist_name = "Normal", y= dnorm(x, mean =3, sd =1)),
+  data.frame(x= x, dist_name= "Exponential", y= dexp(x, rate = 1/2)),
+  data.frame(x=x, dist_name = "Gamma", y = dgamma(x, shape =2, rate =1))
+)
 
+ggplot(df, aes(x,y)) + geom_line() + facet_wrap(~dist_name)
 
+x <- seq(from = -3, to = 3, length.out = 100)
+df <- data.frame(x, y = dnorm(x, mean = 0, sd = 1))
+p <- ggplot(df, aes(x,y)) + geom_line() + 
+        labs(title = 'Standard Normal Distribution', y = 'Density', x = 'Quantile')
 
+q75 <- quantile(df$x, .75)
+q95 <- quantile(df$x, .95)
 
-
-
+p + geom_ribbon(
+  data = subset(df, x> q75 & x < q95),
+  aes(ymin = 0, ymax = y), fill = 'blue', color = NA, alpha = 0.5
+)
