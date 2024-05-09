@@ -681,3 +681,44 @@ p + geom_ribbon(
   data = subset(df, x> q75 & x < q95),
   aes(ymin = 0, ymax = y), fill = 'blue', color = NA, alpha = 0.5
 )
+
+
+# 9.8
+x <- rnorm(75, 100, 15)
+t.test(x, mu = 95)
+
+
+t.test(x, conf.level = 0.99) # 9.9 모평균의 신뢰구간 구하기
+wilcox.test(x, conf.int = TRUE) # 9.10 중앙값에 대한 신뢰구간 구하기
+prop.test(11, 20, 0.5, alternative = 'greater') # 9.11표본비율을 이용한 모비율 검정
+shapiro.test(x) # 9.13 정규성 검정
+
+# 9.14 runs 검정: 이진값일 때 수열이 랜덤인가를 검정
+install.packages('tseries')
+library(tseries)
+s <- sample(c(0,1),100, replace = T)
+runs.test(as.factor(s))
+runs.test(as.factor(c(0,0,1,1,0,0,0,1,1,1,0)))
+
+# 9.15 두 모집단의 평균 비교: t.test(x,y, paired=TRUE)
+
+# 9.16 비모수적으로 두 표본의 위치 비교하기
+# 두 개의 모집단에서 나온 표본들이 있을 때, 모집단의 분포는 모르지만 서로 비슷한 모양임
+# 이때 한 모집단이 다른 것과 비교해서 왼쪽 또는 오른쪽으로 치우쳐 있는 지 검정
+# wilcox.test(x,y) default paired = FALSE
+
+# 9.17 모상관계수의 유의성 검정하기
+# cor.test(x,y)   정규분포가 아닌 모집단은 method = 'spearman'
+
+# 9.18 집단이 동일 비율로 되어 있는 지 검정하기
+ns <- c(48,64)
+nt <- c(100,100)
+prop.test(ns,nt)
+
+success <- c(14,10)
+trials <- c(38,40)
+
+prop.test(success, trials)
+
+# 9.19 집단의 모평균을 쌍별로 비교하기: pairwise.t.test(x, f) x는 데이터 f는 집단 분류 요인
+# 9.20 두 표본이 동일 분포에서 왔는 지 검사하기: ks.test(x,y)
