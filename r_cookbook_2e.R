@@ -722,3 +722,90 @@ prop.test(success, trials)
 
 # 9.19 집단의 모평균을 쌍별로 비교하기: pairwise.t.test(x, f) x는 데이터 f는 집단 분류 요인
 # 9.20 두 표본이 동일 분포에서 왔는 지 검사하기: ks.test(x,y)
+
+
+
+# chapter 10. Graphics
+# introduction
+df <- data.frame(x=1:5, y=1:5)
+ggplot(df, aes(x,y)) + geom_point()
+ggplot(df, aes(x,y)) + geom_point() + labs(
+  title = 'Simple Plot Example',
+  subtitle = 'with a substitute',
+  x = 'x-values',
+  y = 'y-values'
+) + theme(panel.background = element_rect(fill = 'white', color = 'grey50'))
+# geom object function: geom_line, geom_boxplt, geom_point ..
+# facet function: facet_wrap, facet_grid ..
+
+# 10.1 creating a scatter plot
+ggplot(mtcars, aes(hp, mpg)) + geom_point()
+
+# 10.2  Adding a title and labels
+ggplot(mtcars, aes(hp, mpg)) + geom_point() +
+  labs(title = 'Cars: Horsepower va Fuel Economy',
+       x = 'HP', y = 'Economy (miles per gallon)')
+
+# 10.3 Adding (or Removing) a Grid
+ggplot(mtcars, aes(hp, mpg)) + geom_point() +
+  theme(panel.background = element_rect(fill = 'white', color = 'grey50')) # 그래픽 배경 패널 수정
+
+# panel.grid.major: these are white by default and heavy.
+# panel.grid.minor: there are white by default and light
+# panel.backgroud: this is the backgroud that is grey by default
+
+g1 <- ggplot(mtcars, aes(hp, mpg)) + geom_point() +
+  labs(title = 'Cars: Horsepower va Fuel Economy',
+           x = 'HP', y = 'Economy (miles per gallon)') +
+  theme(panel.background = element_blank())
+g2 <- g1 + theme(panel.grid.major =
+                   element_line(color = 'black', linetype = 3)) + # linetype = 3, dash
+  theme(panel.grid.minor = element_line(color = 'darkgrey', linetype = 4)) # linetype = 4, dot dash
+g1
+g2
+g1 + theme(panel.grid.major = element_line(colour = 'grey')) # 회색 격자선 추가
+
+# 10.4 Applying a theme to a ggplot figure
+# to use one of the themes, just add to ggplot ()+
+
+p <- ggplot(mtcars, aes(x=disp, y =hp)) +
+  geom_point() +
+  labs(title = "mtcars: Displacement vs Horsepower",
+       x = 'Displacement(cubic inches)', y ='Horsepower')
+p + theme_bw() # 테두리
+p + theme_classic()
+p + theme_minimal()
+p + theme_void()
+
+# 10.5 creating a scatter plot of multiple grps
+ggplot(iris, aes(Petal.Length,Petal.Width,
+                 shape = Species,
+                 color = Species)) + geom_point()
+
+# 10.6 Adding (or Removing) a legend
+g <- ggplot(iris,  aes(Petal.Length,Petal.Width,
+                       shape = 'Observation')) +
+  geom_point() +
+  guides(shape = guide_legend(title = 'My Legend Title'))
+ # shape를 문자열 값으로 설정, guides이용해서 재레이블
+g <- ggplot(iris, aes(Petal.Length,Petal.Width, 
+                      shape = Species, 
+                      color = Species)) + 
+  geom_point() + theme(legend.position = 'none')
+g + theme(legend.position = 'bottom')
+g + theme(legend.position = c(.8, .2))
+
+# 10.7  Plotting the regression line of a scatter plot
+# ggplot(df, aes(x,y)) + geom_point() + geom_smooth(method = 'lm', formula y ~x, se = FALSE)
+install.packages('faraway')
+library(faraway)
+data(strongx)
+ggplot(strongx, aes(energy, crossx)) + geom_point()
+g <- ggplot(strongx, aes(energy,crossx)) + geom_point()
+g + geom_smooth(method = 'lm', formula = y ~ x)
+g + geom_smooth(method = 'lm', formula = y ~ x, se = FALSE)
+
+m <- lm(crossx ~ energy, strongx)
+ggplot(strongx, aes(energy, crossx)) + geom_point() +
+  geom_abline(intercept = m$coefficients[1],
+              slope = m$coefficients[2])
