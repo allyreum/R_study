@@ -809,3 +809,121 @@ m <- lm(crossx ~ energy, strongx)
 ggplot(strongx, aes(energy, crossx)) + geom_point() +
   geom_abline(intercept = m$coefficients[1],
               slope = m$coefficients[2])
+
+# 10.8 Plotting All Variables against all other variables
+install.packages('GGally')
+# packageVersion("scales")
+# install.packages("scales")
+# library(ggplot2)
+library(GGally)
+ggpairs(iris) # multiple scatter plot
+plot(iris) # faster than ggpairs
+
+# 10.9 Creating one scatter plot for each group
+data(Cars93, package = 'MASS')
+ggplot(Cars93, aes(MPG.city, Horsepower)) + geom_point() + 
+  facet_wrap(~ Origin)
+
+# 10.10  Creating a bar chart
+ford_cars <- Cars93 %>% filter(Manufacturer == 'Ford')
+ggplot(ford_cars, aes(Model, Horsepower)) + geom_bar(stat = 'identity')
+# 빈도수가 계산되도록 하기 위해선 geom_bar()에 stat='count' 입력
+# stat='count'는 y축의 높이를 데이터의 빈도(count)로 표시하는 bar그래프 형식
+
+ggplot(airquality, aes(month.abb[Month], Temp)) +
+  geom_bar(stat = 'summary', fun.y ='means') +
+  labs(title = 'Mean Temp by Month', x = '', y = 'Temp (deg.F)')
+# Month: airquality 데이터프레임에 있는 열로, 월을 숫자로 나타낸 값(1~12)입니다.
+# month.abb: R에 내장된 벡터로, month.abb는 c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+# month.abb[Month]: Month의 값에 따라 month.abb의 특정 요소를 선택합니다. 예를 들어, Month가 1이면 month.abb[1]은 "Jan"이 
+# geom_bar(stat = 'summary', fun.y ='means') 는 summary 중 mean을 사용
+
+library(forcats)
+aq_data <- airquality %>% arrange(Month) %>% mutate(month_abb = fct_inorder(month.abb[Month]))
+# fct_inorder() 함수는 벡터의 순서대로 팩터(factor)를 생성
+
+ggplot(aq_data, aes(month_abb, Temp)) + 
+  geom_bar(stat = 'summary', fun ='mean') + # fun.y는 안됨
+  labs(title = 'Mean Temp by month', x = '', y = 'Temp(deg. F)')
+
+# 10.11 Adding Confidence Intervals to a bar chart
+# ggplot(df, aes(group, stat)) + geom_bar(stat = 'identity') + geom_errorbar(aes(ylim = lower, ymax = upper), width = .2)
+# Confidence Intervals = errorbar
+ggplot(aq_data, aes(month_abb, Temp)) + 
+  geom_bar(stat = 'summary', fun ='mean', fill = 'cornflowerblue') + 
+  stat_summary(fun.data = mean_se, geom = 'errorbar') + 
+  labs(title = 'Mean Temp by month', x = '', y = 'Temp(deg. F)')
+
+ggplot(aq_data, aes(reorder(month_abb, -Temp, mean),Temp)) + 
+  geom_bar(stat = 'summary', fun ='mean', fill = 'tomato') + 
+  stat_summary(fun.data = mean_se, geom = 'errorbar') + 
+  labs(title = 'Mean Temp by month', x = '', y = 'Temp(deg. F)')
+
+# 10.12 Coloring a bar chart
+# ggplot(df, aes(x,y, fill = group))
+# 월별 평균 온도를 시각화, fill aesthetic에 month_abb를 사용
+ggplot(aq_data, aes(month_abb, Temp, fill = month_abb)) +
+  geom_bar(stat = 'summary', fun = 'mean') +
+  labs(title = 'Mean Temp by month', x = '', y = 'Temp(deg. F)') +
+  scale_fill_brewer(palette = 'Paired')
+
+#  온도의 크기를 색상으로 표현.  ..y..는 stat = 'summary'의 결과인 평균 온도
+ggplot(aq_data, aes(month.abb[Month], Temp, fill = ..y..)) +
+  geom_bar(stat = 'summary', fun = 'mean') +
+  labs(title = 'Mean Temp by month', x = '', y = 'Temp(deg. F)', 
+       fill = 'Temp')
+
+# 10.13 Plotting a line from x and y points
+# ggplot(df, aes(x,y)) + geom_point() + geom_line()
+ggplot(economics, aes(date, unemploy)) + geom_point() + geom_line()
+
+
+# 10.15  plotting multiple datasets
+# ggplot() + geom_line(df1, aes(x1, y1)) + geom_line(df2, aes(x2, y2))
+
+# 예제 데이터프레임 생성
+df1 <- data.frame(x1 = 1:10, y1 = rnorm(10))
+df2 <- data.frame(x2 = 1:10, y2 = rnorm(10))
+
+# ggplot2 그래프 생성
+ggplot() + 
+  geom_line(data = df1, aes(x = x1, y = y1), color = 'darkblue') + 
+  geom_line(data = df2, aes(x = x2, y = y2), linetype = 'dashed')
+
+# 10.16  Adding Vertical or Horizontal Lines
+# ggplot(df1) + aes(x1, y1) + geom_point() + geom_vline() + geom_hline()
+samp <- rnorm(100)
+samp_df <- data.frame(samp, x = 1:length(samp))
+
+mean_line <- mean(samp_df$samp)
+sd_lines <- mean_line + c(-2,-1,+1, +2) * sd(samp_df$samp)
+ggplot(samp_df, aes(x, samp)) + geom_point() +
+  geom_hline(yintercept = mean_line, color = 'darkblue') +
+  geom_hline(yintercept = sd_lines, linetype ='dashed')
+
+# 10.17 creating a boxplot
+ggplot(samp_df) + aes(y = samp) + geom_boxplot() + coord_flip()
+
+# 10.18 creating one boxplot for each factor level
+# ggplot(df) + aes(x = factor, y = values) + geom_boxplot()
+data("UScereal", package = 'MASS')
+ggplot(UScereal) + aes(x = as.factor(shelf), y = sugars) +
+  geom_boxplot() +
+  labs(
+    title = 'Sugar Content by Shelf',
+    x = 'Shelf',
+    y = 'Sugar (grams per portion)'
+  )
+
+# 10.19 creating a Histogram,
+ggplot(Cars93) + geom_histogram(aes(x = MPG.city), bins = 13) 
+
+# 10.20  adding a density estimate 
+ggplot(Cars93,aes(x = MPG.city)) + geom_histogram(aes(y = ..density..), bins = 13) +
+  geom_density()
+
+# 12 handling data
+iris %>% view()
+iris %>% view('test') # put a descriptive name in quotes
+rowSums(m) # sum the rows
+colSums(m) # sum the columns
