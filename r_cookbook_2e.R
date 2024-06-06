@@ -1,10 +1,11 @@
+# R Cookbook, 2nd Edition
+# PDF: https://rc2e.com/simpleprogramming
 print('welcome to R Cookbook world')
 
 # chapter 5: Data Structures
 # In a vector, all elements must have the same mode.
 # : a scalar is simply avector that contains exactly one element. 
 # In a list, the elements can have different modes.
-
 
 v <- c(10,20,30)
 names(v) <- c('go','sweet','home')
@@ -922,8 +923,87 @@ ggplot(Cars93) + geom_histogram(aes(x = MPG.city), bins = 13)
 ggplot(Cars93,aes(x = MPG.city)) + geom_histogram(aes(y = ..density..), bins = 13) +
   geom_density()
 
-# 12 handling data
+# chapeter12. handling data
 iris %>% view()
 iris %>% view('test') # put a descriptive name in quotes
 rowSums(m) # sum the rows
 colSums(m) # sum the columns
+
+
+#  chatper 15. Simple Programming
+# 15.1 choosing between two alternative: if-else
+
+x <- 0
+if(x == 0){
+  print('x는 0이다')
+}
+
+y <- c(-2,-1,0,1,2)
+if(all( y < 0)){
+  print('all are negative')
+}
+
+if(any(y<0)){
+  print('y 중에 음수가 포함되어있다.')
+}
+
+
+# 15.2 Iterating with a loop
+for( x in 1:5){
+  cat(x, x^2, "\n")
+}
+
+v <- (1:5)
+
+for (i in 1:5){
+  v[[i]] <- v[[i]]^2
+}
+print(v)
+
+# 15.3 Define a function
+cv <- function(x){
+  sd(x)/mean(x)
+}
+cv(v)
+
+gcd <- function(a,b){
+  if( b == 0 ){
+    a
+  } else {
+    gcd(b,a %% b)
+  }
+}
+
+gcd(14,21)
+
+
+# 15.4 Creating a local variable
+unitInt <- function(x) {
+  low <- min(x)
+  high <- max(x)
+  (x - low) / (high - low) # 정규화(Normalization)
+}
+
+# 15.5 Choosing between multiple alternative: switch
+who <- c("Curly", "long") # EXPR must be a length 1 vector
+switch("Larry", Moe = "long", Larry = "fuzzy", Curly = "none")
+
+i = 20
+switch(as.character(i),
+       "10" = "ten",
+       "20" = "twenty",
+       "30" = "thirty",
+       "other")
+
+
+# 15.6 Defining Defaults for Function Parameters
+greet <- function(name) {
+  cat("Hello,", name, "\n")
+}
+greet("Fred")
+greet() # argument "name" is missing, with no default
+
+greet_default <- function(name = "world") {
+  cat("Hello,", name, "\n")
+}
+greet_default()
