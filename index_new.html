@@ -3,101 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML 필수태그</title>
+    <title>FORM</title>
 </head>
 <body>
-    <!-- 콘텐츠가 있는 문법, 여기부터가 browser에 노출되는 영역 -->
-    <!-- hn 태그: h1 ~ h6, 주로 h1 ~ h4 -->
-    <!-- 제목이나 주제와 같은 성격의 텍스트를 나타날 때 사용하는 태그 -->
-    <h1> h1 tag</h1>
-    <h2> h2 tag</h2>
-    <h3> h3 tag</h3>
-    <h4> h4 tag</h4>
-    <h5> h5 tag</h5>
-    <h6> h6 tag</h6>
-
-    <!-- p: 단락(문단, 문장)을 나타낼 때 사용하는 태그-->
-    <p>내일 출근이라니.. 또 출근이라니.. </p>
-    <!-- br: 줄바꿈을 하기 위해서 사용하는 태그 -->
-    <p>
-        내일 출근이라니.. <br> 
-        또 출근이라니.. 
-    </p>
-    <!-- blockquto: 긴 인용문을 나타낼 때 사용하는 태그-->
-     <!-- q: 작은 단위 인용문을 나타낼 때 사용하는 태그-->
-    <blockquote>인용된 내용을 작성</blockquote>
-    <blockquote cite="https://www.gilbut.co.kr/book/view?bookcode=BN003377">
-        인용된 내용을 작성
-    </blockquote>
-    <q cite="https://www.gilbut.co.kr/book/view?bookcode=BN003377">
-        짧은 이용문
-    </q>
-    <!-- (의미전달) ins: 새롭게 삽입(underline), del: 삭제(취소선)) -->
+  <form action="" method="">
+    <!-- action은 저장할 서버, method는 전송 시 type-->
+     아이디: <input type="text"><br>
+     <label for = "id">ID:</label> <input type="text" id="id"><br>
+     <label>아이디:<input type="text"></label> <br> <!-- 위에꺼랑 같음. -->
+     <lavel>password:</lavel><input type="password"><br>
+     <input type="checkbox">
+     <input type="checkbox" checked>
+     <input type="radio"><br>
+  </form>
+  <form action="" method="">
+    <fieldset>
+        <legend>기본정보</legend>
+        <label for = "id">ID:<input type= "text" id="id"></label>
+        <label for = "pw">Password:<input type= "password" id="pw"></label>
+    </fieldset>
+    <fieldset>
+        <legend>옵션정보</legend>
+        <label for="fam_info">가족관계<input type = "text"></label>
+        <label for="brdt">생년월일<input type = "text"></label>
+    </fieldset>
+    <textarea></textarea>
+    <textarea rows="5" cols = "5"></textarea> <!--이제는 안씀. style에서 가능-->
     <br>
-    <ins> 새롭게 추가된 내용</ins>
-    <del> 기존에 있었지만 삭제되는 내용</del>
-
-    <br>
-    <!-- sub: 아래첨자, sup: 윗 첨자 -->
-    <p>공기의 원소 기호는 H<sub>2</sub>0 입니다.</p>
-    <p>4<sup>2</sup>는 16입니다.</p>
-
-    <!-- div, span: 그룹을 짓기 위해서 사용하는 태그  -->
-    <div class = "movie">
-        <h2>영화 소개</h2>
-        <p> 영화 <span>소개</span>하는 페이지</p>
-    </div> 
-
-    <div class = "tv">
-        <h2>TV 소개</h2>
-        <p> TV 프로그램 <span>소개</span></p>
-    </div> 
-    <!-- ul(unordered list)-->
-    <!-- li(list item)-->
-     <ul>
-        <li>item1</li>
-        <li>item2</li>
-        <li>item3</li>
-     </ul>
-
-    <!-- ol(ordered list)-->
-    <!-- li(list item)-->
-     <ol>
-        <li>아침먹기</li>
-        <li>출근하기</li>
-        <li>점심먹기</li>
-        <li>퇴근하기</li>
-     </ol>
-    <!-- dl(definition list, description list)-->
-    <!-- dt(descripton term), dd(description details)-->
-    <dl>
-        <dt>HTML</dt>
-        <dd>HTML은 HyperText Markup Language의 약자이다.</dd>
-        <dt>R</dt>
-        <dd>R은 R이다.</dd>
-    </dl>
-    <!--a(anchor) 태그: 다른 문서 또는 내부의 다른 영역과 연결할 때 사용하는 태그-->
-    <a href="https://github.com/allyreum" target="_blank">Github</a>
-    <!-- taregt="_blank": 새 탭으로 열기-->
-
-    <!-- image태그-->
-    <img src="https://i.pinimg.com/1200x/00/1c/d1/001cd117ff4a86c6887e51342fa35dd4.jpg" 
-     alt="핀터" 
-     width="300">
-     
-     <br>
-     <a href="https://github.com/allyreum" target="_blank">
-        <img src="https://i.pinimg.com/1200x/00/1c/d1/001cd117ff4a86c6887e51342fa35dd4.jpg" 
-        alt="핀터" width="100">
-     </a>
-      <br>
-
-     <!-- strong: 문장 강조(bold), em: 단어 강조(italic)-->
-    <p>경고! 관계자외 출입 금지</p> 
-     <strong>경고! 관계자외 출입 금지</strong> <br>
-     <strong>경고! <em>관계자외</em> 출입 금지</strong><br>
-     <b>경고! <i>관계자외</i> 출입 금지</b>
-     
-
+    <select multiple>
+        <optgroup label="성별">
+            <option value="male">남</option>
+            <option value="female">여</option>
+        </optgroup>
+    </select>
+    <select>
+        <optgroup label="성별">
+            <option value="male">남</option>
+            <option value="female" selected>여</option> 
+            <!--selected: 특정 옵션 tag를 먼저 선택할 수 있도록 설정-->
+        </optgroup>
+    </select>
+    <button>안녕하세요. 안녕히가세요</button>
+    <button disabled>안녕히가세요</button><br>
+    <input type="text" readonly>
+    <input type="text" maxlength="10" placeholder="속성 설명안내문구">
+  </form>
 </body>
 </html>
