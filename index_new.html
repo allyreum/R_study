@@ -3,50 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORM</title>
+    <title>테이블</title>
 </head>
 <body>
-  <form action="" method="">
-    <!-- action은 저장할 서버, method는 전송 시 type-->
-     아이디: <input type="text"><br>
-     <label for = "id">ID:</label> <input type="text" id="id"><br>
-     <label>아이디:<input type="text"></label> <br> <!-- 위에꺼랑 같음. -->
-     <lavel>password:</lavel><input type="password"><br>
-     <input type="checkbox">
-     <input type="checkbox" checked>
-     <input type="radio"><br>
-  </form>
-  <form action="" method="">
-    <fieldset>
-        <legend>기본정보</legend>
-        <label for = "id">ID:<input type= "text" id="id"></label>
-        <label for = "pw">Password:<input type= "password" id="pw"></label>
-    </fieldset>
-    <fieldset>
-        <legend>옵션정보</legend>
-        <label for="fam_info">가족관계<input type = "text"></label>
-        <label for="brdt">생년월일<input type = "text"></label>
-    </fieldset>
-    <textarea></textarea>
-    <textarea rows="5" cols = "5"></textarea> <!--이제는 안씀. style에서 가능-->
+    <table border="1">
+        <caption>가격표</caption>
+        <!-- col/ colgrp tag는 caption 태그 다음에 사용-->
+         <col style="width: 80px">
+         <colgroup span = "2" style="width: 150px"></colgroup>
+         <col style="width: 100px">
+        <thead>
+            <tr><!--row-->
+                <th>번호</th><!--colnames-->
+                <th>상품명</th>
+                <th>수량</th>
+                <th>가격</th>
+            </tr>
+        </thead>
+        <!-- thead / tfoot/ tbody tag가 필수는 아님-->
+        <tfoot> <!-- thead / tfoot/ tbody 순서대로 작성해야함(웹에는 th > tb > tf로 나옴)-->
+            <tr>
+                <td colspan="2">총계</td>
+                <td> 3개</td>
+                <td> 3,500</td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr><!--row-->
+                <td>1</td><!--value-->
+                <td>콜라</td>
+                <td>1개</td>
+                <td>1,500</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>사이다</td>
+                <td>1개</td>
+                <td rowspan="2">1,000</td>
+                <!--rowspan 병합 = 행개수를 넣으면 됨. 대신 다음 행을 지워줘야함 -->
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>환타</td>
+                <td>1개</td>
+            </tr>
+        </tbody>
+    </table>
     <br>
-    <select multiple>
-        <optgroup label="성별">
-            <option value="male">남</option>
-            <option value="female">여</option>
-        </optgroup>
-    </select>
-    <select>
-        <optgroup label="성별">
-            <option value="male">남</option>
-            <option value="female" selected>여</option> 
-            <!--selected: 특정 옵션 tag를 먼저 선택할 수 있도록 설정-->
-        </optgroup>
-    </select>
-    <button>안녕하세요. 안녕히가세요</button>
-    <button disabled>안녕히가세요</button><br>
-    <input type="text" readonly>
-    <input type="text" maxlength="10" placeholder="속성 설명안내문구">
-  </form>
+    <table border="1">
+        <caption> 성적표</caption>
+        <tr>
+            <th scope="col">구분</th>
+            <th scope="col">중간고사</th>
+            <th scope="col">기말고사</th>
+        </tr>
+        <tr>
+            <th scope="row">전공</th>
+            <td>A+</td>
+            <td>B-</td>
+        </tr>
+        <tr>
+            <th scope="row">교양</th>
+            <td>C-</td>
+            <td>B+</td>
+        </tr>
+    </table>
+        <br>
+    <table border="1">
+        <caption> 성적표</caption>
+        <tr>
+            <th scope="col" rowspan="2">구분</th>
+            <th scope="colgroup" colspan="2">1학년</th>
+            <!-- 1개일 때는 col, 2개 이상일 때는 colgroup-->
+        </tr>
+        <tr>
+            <th>중간고사</th>
+            <th>기말고사</th>
+        </tr>
+        <tr>
+            <th scope="rowgroup" rowspan="2">전공</th>
+            <td>A+</td>
+            <td>B-</td>
+        </tr>
+        <tr>
+            <td>C-</td>
+            <td>B+</td>
+        </tr>
+    </table>
 </body>
 </html>
+
