@@ -1,0 +1,3 @@
+select species, body_mass_g from penguins
+where species is not NULL and body_mass_g is not NULL 
+order by body_mass_g desc, species
