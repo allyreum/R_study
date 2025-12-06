@@ -1,0 +1,4 @@
+ select customer_id from records
+ where order_date between '2020-12-01' and '2020-12-31'
+ group by customer_id
+ having sum(sales) >= 1000
