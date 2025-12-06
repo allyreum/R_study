@@ -1,0 +1,5 @@
+select measured_at as good_day
+from measurements
+where pm2_5 <= 9
+      and measured_at BETWEEN '2022-12-01' and '2022-12-31'
+order by measured_at
