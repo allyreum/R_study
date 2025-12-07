@@ -1,0 +1,44 @@
+-- 30㎍/㎥ 이상으로 2일 연속
+-- with temp as
+-- (select measured_at, next_date,
+--   (lead(measured_at) over (order by measured_at) - next_date) as day_dif
+-- FROM (
+--   select measured_at, pm10,
+--      lead(measured_at) over (order by measured_at) as next_date
+--   from measurements
+--   where pm10 >= 30
+-- ) a
+-- where (measured_at + 1) = next_date
+-- )
+-- select next_date as date_alert from temp where day_dif > 0 order by next_date
+
+
+-- 연속 나빠져서 30㎍/㎥ 이상이 된 날
+WITH rising AS (
+    SELECT
+        measured_at,
+        pm10,
+        CASE WHEN pm10 >= LAG(pm10) OVER (ORDER BY measured_at) THEN 1 ELSE 0 END AS is_rising
+    FROM measurements
+),
+seg AS (
+    SELECT
+        measured_at,
+        pm10,
+        SUM(CASE WHEN is_rising = 0 THEN 1 ELSE 0 END) OVER (ORDER BY measured_at) AS grp
+    FROM rising
+),
+seg_c as (
+  select *,
+    case when grp <> lead(grp) over (order by measured_at) then 1 
+    end as ed_pt
+  from seg
+),
+seg_grp as (
+select grp from seg_c
+group by grp
+having count(*) >= 2
+) 
+select * from seg_c
+where grp in (select grp from seg_grp)
+and ed_pt = 1 and pm10>=30
