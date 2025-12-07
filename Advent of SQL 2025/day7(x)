@@ -1,3 +1,5 @@
+-- 참고: https://gent.tistory.com/339
+
 -- 30㎍/㎥ 이상으로 2일 연속
 -- with temp as
 -- (select measured_at, next_date,
