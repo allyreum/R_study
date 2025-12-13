@@ -1,0 +1,37 @@
+with avg_2 as (
+select avg(density) as d_avg, 
+  avg(residual_sugar) as r_avg
+from wines
+),
+avg_w as (
+select avg(pH) as ph_avg,
+ avg(citric_acid) as c_avg
+from wines
+where color = 'white'
+)
+select * from wines
+where color = 'white'
+  and quality >= 7
+  and density > (select d_avg from avg_2)
+  and residual_sugar > (select r_avg from avg_2)
+  and pH < (select ph_avg from avg_w)
+  and citric_acid > (select c_avg from avg_w)
+
+--------------------------------------------------------------------
+  WITH avg_vals AS (
+    SELECT
+        AVG(density) AS d_avg,
+        AVG(residual_sugar) AS r_avg,
+        AVG(CASE WHEN color = 'white' THEN pH END) AS ph_avg,
+        AVG(CASE WHEN color = 'white' THEN citric_acid END) AS c_avg
+    FROM wines
+)
+SELECT w.*
+FROM wines w
+CROSS JOIN avg_vals a
+WHERE w.color = 'white'
+  AND w.quality >= 7
+  AND w.density > a.d_avg
+  AND w.residual_sugar > a.r_avg
+  AND w.pH < a.ph_avg
+  AND w.citric_acid > a.c_avg;
