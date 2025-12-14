@@ -1,0 +1,10 @@
+select
+  case 
+   when (day in ('Sat', 'Sun')) then 'weekend'
+-- when day regexp 'Sun|Sat' then 'weekend' 
+   else 'weekday'
+  end as week,
+  sum(total_bill) as sales
+from tips
+group by week
+order by sales desc
