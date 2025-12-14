@@ -1,0 +1,9 @@
+with temp as (select a.* from records a
+inner join teams b
+on a.team_id = b.id and b.team = 'KOR'
+inner join events c
+on c.id = a.event_id and c.event = 'Volleyball Women''s Volleyball'
+)
+select * from athletes
+where id in (select athlete_id as id from temp )
+order by id
