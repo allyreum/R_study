@@ -1,0 +1,6 @@
+select name as artist, title
+from artworks a
+inner join artworks_artists b on a.artwork_id = b.artwork_id
+inner join artists c on b.artist_id = c.artist_id
+where classification like 'Film%' 
+  and nationality = 'Korean'
