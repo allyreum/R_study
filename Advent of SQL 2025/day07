@@ -22,6 +22,7 @@ WHERE pm10 >= 30
     1) where절( pm10 >= 30 )이 윈도우 함수보다 먼저 적용됨 → 마지막으로 걸어야 함
     2) next_date를 이미 lead(measured_at)로 만들어놓고, 다시 lead(measured_at)를 써서 비교함 → 같은 값을 두 번 참조
 SQL 논리적 실행 순서: FROM → WHERE → GROUP BY → HAVING → SELECT(윈도우 함수 계산) → ORDER BY
+JOIN 논리적 실행순서: FROM ─ JOIN / ON → WHERE → GROUP BY → HAVING → SELECT - 집계/윈도우 함수 → ORDER BY
 ---------------------------------------------------------------------------------------------------------- 
 
 with temp as(
