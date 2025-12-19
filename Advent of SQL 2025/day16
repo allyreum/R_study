@@ -1,0 +1,19 @@
+select year, sum(sales_total) as net_sales
+from (
+  select year(purchased_at) as year 
+  , total_price
+  , discount_amount
+  , total_price - discount_amount as sales_total
+from transactions
+where is_returned <> 1
+) a
+group by year
+order by year
+
+SELECT
+    YEAR(purchased_at) AS year,
+    SUM(total_price - discount_amount) AS net_sales
+FROM transactions
+WHERE is_returned = 0
+GROUP BY YEAR(purchased_at)
+ORDER BY year;
