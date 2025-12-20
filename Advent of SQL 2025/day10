@@ -6,7 +6,19 @@ with temp as (
   inner join games d on a.game_id = d.id
   where medal is not null and b.team = 'KOR' and c.event = 'Volleyball Women''s Volleyball' 
 )
-select id, name, medal as medals from athletes a
-inner join temp t
-on a.id = t.athlete_id
+select id
+  , name
+  , GROUP_CONCAT(t.medal ORDER BY t.year SEPARATOR ',') AS medals
+from athletes a
+inner join temp t on a.id = t.athlete_id
+GROUP BY a.id, a.name
 order by id
+
+--------------------------------------  참고
+| DB         | 함수                   |
+| ---------- | --------------------- |
+| MySQL      | GROUP_CONCAT          |
+| PostgreSQL | STRING_AGG(col, ',')  |
+| Oracle     | LISTAGG(col, ',')     |
+| SQL Server | STRING_AGG(col, ',')  |
+--------------------------------------
