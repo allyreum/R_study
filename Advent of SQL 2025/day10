@@ -1,0 +1,12 @@
+with temp as (
+  select athlete_id, d.year, medal
+  from records a
+  inner join teams b on a.team_id = b.id
+  inner join events c on c.id = a.event_id
+  inner join games d on a.game_id = d.id
+  where medal is not null and b.team = 'KOR' and c.event = 'Volleyball Women''s Volleyball' 
+)
+select id, name, medal as medals from athletes a
+inner join temp t
+on a.id = t.athlete_id
+order by id
