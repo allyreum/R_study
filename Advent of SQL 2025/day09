@@ -1,9 +1,46 @@
-with temp as (select a.* from records a
-inner join teams b
-on a.team_id = b.id and b.team = 'KOR'
-inner join events c
-on c.id = a.event_id and c.event = 'Volleyball Women''s Volleyball'
+with temp as (
+  select athlete_id, d.year
+  from records a
+  inner join teams b
+  on a.team_id = b.id and b.team = 'KOR'
+  inner join events c
+  on c.id = a.event_id and c.event = 'Volleyball Women''s Volleyball'
+  inner join games d
+  on a.game_id = d.id
+  order by athlete_id, year
+),
+seq_yr as (
+  select *,
+  LAG(year, 1) OVER (ORDER BY athlete_id, year) + 4 as prev_yr,
+  LAG(athlete_id, 1) OVER (ORDER BY athlete_id, year) as prev_id
+  from temp 
 )
 select * from athletes
-where id in (select athlete_id as id from temp )
-order by id
+where id in (
+  select athlete_id from seq_yr 
+  where year = prev_yr and athlete_id = prev_id )
+
+---------------- 오답노트 ----------------------------------------------------------------------------------
+1) CTE 내부 ORDER BY는 보장되지 않음
+2) LAG에 PARTITION BY가 없고, where절에서 athlete_id = next_id → 설계개선 필요
+ - LAG(expression, offset) OVER (ORDER BY ...) # default offset = 1 (이전 행)
+3) IN (subquery) → 사용 EXISTS 사용
+ - IN: 서브쿼리 전체 평가 후 비교
+ - EXISTS: 외부 행마다 조건 충족 여부만 체크
+---------------------------------------------------------------------------------------------------------- 
+
+WITH base AS (
+  SELECT
+      a.athlete_id,
+      d.year,
+      LAG(d.year) OVER ( PARTITION BY a.athlete_id ORDER BY d.year) AS prev_year
+  FROM records a
+  JOIN teams b ON a.team_id = b.id AND b.team = 'KOR'
+  JOIN events c ON c.id = a.event_id AND c.event = 'Volleyball Women''s Volleyball'
+  JOIN games d ON a.game_id = d.id
+)
+SELECT DISTINCT at.*
+FROM athletes at
+WHERE EXISTS (
+    SELECT 1 FROM base b WHERE b.athlete_id = at.id AND b.year = b.prev_year + 4
+);
