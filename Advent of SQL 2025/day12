@@ -1,0 +1,12 @@
+select b.name as genre,
+  round(avg(case when year = 2011 then critic_score end),2) as score_2011,
+  round(avg(case when year = 2012 then critic_score end),2) as score_2012,
+  round(avg(case when year = 2013 then critic_score end),2) as score_2013,
+  round(avg(case when year = 2014 then critic_score end),2) as score_2014,
+  round(avg(case when year = 2015 then critic_score end),2) as score_2015
+from games a, genres b
+where a.genre_id = b.genre_id 
+  and critic_score is not null
+  and year between 2011 and 2015
+group by b.name
+order by b.name
