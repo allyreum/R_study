@@ -1,0 +1,9 @@
+select distinct customer_id,
+  case 
+    when customer_id%10 = 0 then 'A' 
+      else 'B' 
+    end as bucket
+from transactions
+order by customer_id
+
+-- % 또는 MOD() 사용
