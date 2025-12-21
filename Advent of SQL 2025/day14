@@ -1,0 +1,20 @@
+with rating_over as (
+  select author, 
+    count(*) as cnt,
+    avg(user_rating) as avg_rate, 
+    avg(reviews) as avg_reviews
+  from books
+  where genre = 'Fiction'
+  group by author
+  having avg(user_rating) >= 4.5
+),
+reviews_avg as (
+  select avg(reviews) as avg_re
+  from books
+  where genre = 'Fiction'
+)
+select a.author
+from rating_over a,reviews_avg b
+where a.cnt >= 2
+  and a.avg_reviews >= b.avg_re
+order by author
