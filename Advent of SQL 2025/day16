@@ -1,0 +1,43 @@
+with temp as (
+  select 
+    row_number() over (order by (user_a_id + user_b_id)) as rk,
+    user_a_id, user_b_id, 
+    user_a_id + user_b_id as id_sum
+    from edges
+)
+select user_a_id, user_b_id, id_sum
+from temp
+where rk <= (select count(*)/1000 from temp )
+
+
+
+-------- GPT --------------------------------------------------
+ ROW_NUMBER() 대신 ORDER BY + LIMIT로 바꾸는 순간 실행 비용이 크게 줄어듦
+SELECT
+  user_a_id,
+  user_b_id,
+  user_a_id + user_b_id AS id_sum
+FROM edges
+ORDER BY user_a_id + user_b_id
+LIMIT (
+  SELECT COUNT(*) DIV 1000
+  FROM edges
+);
+----------------------------------------------------------------
+
+
+함수명() OVER ( [PARTITION BY 컬럼] ORDER BY 컬럼 [ASC|DESC] )
+ - OVER() 필수
+ - ORDER BY 없으면 오류
+ - PARTITION BY 선택
+
+1) ROW_NUMBER: 동일 값이어도 서로 다른 번호
+ROW_NUMBER() OVER ([PARTITION BY 컬럼] ORDER BY 컬럼)
+
+2) RANK: 동일 값 → 동일 순위, 다음 순위는 건너뜀
+RANK() OVER ([PARTITION BY 컬럼] ORDER BY 컬럼)
+
+3) DENSE_RANK: 동일 값 → 동일 순위, 다음 순위 연속 유지
+DENSE_RANK() OVER ([PARTITION BY 컬럼] ORDER BY 컬럼)
+
+
