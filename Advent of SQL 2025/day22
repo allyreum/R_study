@@ -1,0 +1,57 @@
+select order_Date,
+  weekday
+  ,count(*) as num_orders_today
+  ,COALESCE((lag(count(*)) over (order by order_Date)) + count(*), count(*)) as num_orders_from_yesterday
+from (
+select DATE_FORMAT(purchased_at, '%Y-%m-%d') as order_date,
+    case when  WEEKDAY(purchased_at) = 0 then 'Monday'
+    when  WEEKDAY(purchased_at) = 1 then 'Tuesday'
+    when  WEEKDAY(purchased_at) = 2 then 'Wednesday'
+    when  WEEKDAY(purchased_at) = 3 then 'Thursday'
+    when  WEEKDAY(purchased_at) = 4 then 'Friday'
+    when  WEEKDAY(purchased_at) = 5 then 'Saturday'
+    else 'Sunday'
+    end as weekday
+from transactions
+where is_online_order = 1 
+  and purchased_at >= '2023-11-01'
+  and purchased_at <  '2024-01-01'
+) a
+group by order_date, weekday
+order by order_date
+
+
+-- 오류원인 ----------------------------------------------------------------------------------
+1) purchased_at BETWEEN '2023-11-01' AND '2023-12-31' → 2023-12-31 00:00:00까지만 포함
+2) NVL(expr1, expr2) in Oracle → COALESCE(expr1, expr2) in mysql
+--------------------------------------------------------------------------------------------
+--  GPT ANSWER  
+  WITH daily_orders AS (
+  SELECT
+    DATE(purchased_at) AS order_date,
+    WEEKDAY(purchased_at) AS weekday_num,
+    COUNT(*) AS num_orders_today
+  FROM transactions
+  WHERE is_online_order = 1
+    AND purchased_at >= '2023-11-01'
+    AND purchased_at <  '2024-01-01'
+  GROUP BY DATE(purchased_at), WEEKDAY(purchased_at)
+)
+SELECT
+  order_date,
+  CASE weekday_num
+    WHEN 0 THEN 'Monday'
+    WHEN 1 THEN 'Tuesday'
+    WHEN 2 THEN 'Wednesday'
+    WHEN 3 THEN 'Thursday'
+    WHEN 4 THEN 'Friday'
+    WHEN 5 THEN 'Saturday'
+    ELSE 'Sunday'
+  END AS weekday,
+  num_orders_today,
+  COALESCE(
+    num_orders_today + LAG(num_orders_today) OVER (ORDER BY order_date),
+    num_orders_today
+  ) AS num_orders_from_yesterday
+FROM daily_orders
+ORDER BY order_date;
