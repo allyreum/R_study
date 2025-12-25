@@ -1,0 +1,17 @@
+select bucket
+  ,count(*) as user_count
+  ,round(avg(cnt),2) as avg_orders
+  ,round(avg(total_price),2) as avg_revenue
+from (
+  select customer_id,
+    case when customer_id%10 = 0 then 'A' else 'B' end as bucket,
+    count(*) as cnt,
+    sum(total_price) as total_price
+  from transactions
+  where is_returned = 0
+  group by customer_id
+) a
+group by bucket
+order by bucket
+
+-- MOD(customer_id, 10) : DB 변경(MySQL → Oracle / PostgreSQL) 시 이식성 ↑
