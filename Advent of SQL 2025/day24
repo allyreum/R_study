@@ -1,0 +1,56 @@
+with temp as (
+  select city_id, 
+    customer_id,
+    sum(total_price - discount_amount) as spent
+  from transactions
+  where is_returned = 0
+  group by city_id, customer_id
+), 
+rn_tmp as (
+select ROW_NUMBER() over (PARTITION by city_id order by spent desc) as rn, 
+  city_id, customer_id,spent
+from temp
+)
+select city_id, customer_id, spent as total_spent from rn_tmp where rn = 1
+
+
+------------ GPT(테이블 1회 스캔) ------------------------------------------------------------
+SELECT
+  city_id,
+  customer_id,
+  spent AS total_spent
+FROM (
+  SELECT
+    city_id,
+    customer_id,
+    SUM(total_price - discount_amount) AS spent,
+    ROW_NUMBER() OVER (PARTITION BY city_id ORDER BY SUM(total_price - discount_amount) DESC ) AS rn
+  FROM transactions
+  WHERE is_returned = 0
+  GROUP BY city_id, customer_id
+)
+WHERE rn = 1;
+
+
+------------ GPT(Oracle > KEEP (DENSE_RANK FIRST)) --------------------------------------------
+SELECT
+  city_id,
+  MAX(customer_id)
+    KEEP (DENSE_RANK FIRST ORDER BY SUM(total_price - discount_amount) DESC)
+    AS customer_id,
+  MAX(SUM(total_price - discount_amount))
+    KEEP (DENSE_RANK FIRST ORDER BY SUM(total_price - discount_amount) DESC)
+    AS total_spent
+FROM transactions
+WHERE is_returned = 0
+GROUP BY city_id;
+
+
+1) GROUP BY city_id
+2) 도시 내 고객들을 SUM(total_price - discount_amount) DESC 기준으로 정렬
+3) 1등(DENSE_RANK = 1) 행만 남김
+4) 그 행에서 customer_id, spent를 가져옴
+------------------------------------------------------------------------------------------------
+** KEEP (DENSE_RANK FIRST ORDER BY col ): 그룹 내에서 특정 정렬 기준으로 1등인 행의 값을 집계 함수로 가져와라
+ - KEEP 문법에서는 ROW_NUMBER 사용 불가
+ - 반드시 MAX, MIN, SUM 등과 함께 사용
