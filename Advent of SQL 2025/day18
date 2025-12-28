@@ -1,0 +1,30 @@
+WITH union_edges AS (
+  SELECT user_a_id AS user_id, user_b_id AS friend_id FROM edges
+  UNION ALL
+  SELECT user_b_id AS user_id, user_a_id AS friend_id FROM edges
+),
+degree AS (
+  SELECT user_id, COUNT(*) AS cnt
+  FROM union_edges
+  GROUP BY user_id
+),
+candidates AS (
+  SELECT user_id
+  FROM degree
+  WHERE cnt >= 100
+)
+SELECT
+  u.user_id,
+  d_u.cnt AS friends,
+  SUM(d_f.cnt) AS friends_of_friends,
+  round(SUM(d_f.cnt) / d_u.cnt,2) AS ratio
+FROM union_edges u
+JOIN candidates c
+  ON u.user_id = c.user_id
+JOIN degree d_u
+  ON u.user_id = d_u.user_id
+JOIN degree d_f
+  ON u.friend_id = d_f.user_id
+GROUP BY u.user_id, d_u.cnt
+ORDER BY ratio DESC
+limit 5
